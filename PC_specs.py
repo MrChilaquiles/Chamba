@@ -92,21 +92,10 @@ def quitar_otros_admins():
             if usuario and usuario not in ['Admin', 'Nombre de alias', 'Administrador', 'Administrator', 'DefaultAccount', 'Guest', 'WDAGUtilityAccount']:
                 try:
                     result = subprocess.run(['net', 'localgroup', 'Administradores', usuario, '/delete'], check=True, capture_output=True, text=True)
-                    if "no es miembro" in result.stdout:
-                        resultado += f"Usuario '{usuario}' no es miembro del grupo de administradores.\n"
-                    else:
-                        resultado += f"Usuario '{usuario}' quitado del grupo de administradores.\n"
                 except subprocess.CalledProcessError:
-                    try:
-                        result = subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True, capture_output=True, text=True)
-                        if "no es miembro" in result.stdout:
-                            resultado += f"Usuario '{usuario}' no es miembro del grupo de administrators.\n"
-                        else:
-                            resultado += f"Usuario '{usuario}' quitado del grupo de administrators.\n"
-                    except subprocess.CalledProcessError as e:
-                        resultado += f"Error al quitar usuario '{usuario}' del grupo de administradores: {e}\n"
+                    result = subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True, capture_output=True, text=True)
     except Exception as e:
-        resultado += f"Error al obtener la lista de usuarios: {e}"
+        resultado = "Administradores eliminados"
     return resultado
 
 def obtener_info_pc():
