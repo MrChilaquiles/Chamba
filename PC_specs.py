@@ -93,13 +93,6 @@ def quitar_otros_admins():
                 subprocess.run(['net', 'localgroup', 'Administradores', usuario, '/delete'], check=True)
             except subprocess.CalledProcessError:
                 subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True)
-    try:
-        result = subprocess.run(['net', 'localgroup', 'Administrators'], capture_output=True, text=True)
-        resultado += result.stdout + "\n"
-    except subprocess.CalledProcessError as e:
-        result = subprocess.run(['net', 'localgroup', 'Administradores'], capture_output=True, text=True)
-        resultado += result.stdout + "\n"
-    return resultado
 
 def obtener_info_pc():
     # Inicializar WMI
