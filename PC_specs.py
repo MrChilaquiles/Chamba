@@ -86,34 +86,19 @@ def crear_usuario_admin():
 def quitar_otros_admins():
     # Quita a los demás usuarios del grupo de administradores.
     resultado = ""
+    usuarios = obtener_usuarios()
+    for usuario in usuarios:
+        if usuario and usuario not in ['Admin', 'Nombre de alias', 'Administrador', 'Administrator', 'DefaultAccount', 'Guest', 'WDAGUtilityAccount']:
+            try:
+                subprocess.run(['net', 'localgroup', 'Administradores', usuario, '/delete'], check=True)
+            except subprocess.CalledProcessError:
+                subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True)
     try:
-        usuarios = obtener_usuarios()
-        for usuario in usuarios:
-            if usuario and usuario not in ['Admin', 'Nombre de alias', 'Administrador', 'Administrator', 'DefaultAccount', 'Guest', 'WDAGUtilityAccount']:
-                try:
-                    result = subprocess.run(['net', 'localgroup', 'Administradores', usuario, '/delete'], check=True, capture_output=True, text=True)
-                    if "no es miembro" in result.stdout:
-                        resultado += f"Usuario '{usuario}' no es miembro del grupo de administradores.\n"
-                    else:
-                        resultado += f"Usuario '{usuario}' quitado del grupo de administradores.\n"
-                except subprocess.CalledProcessError as e:
-                    if "no es miembro" in e.stdout:
-                        resultado += f"Usuario '{usuario}' no es miembro del grupo de administradores.\n"
-                    else:
-                        resultado += f"Error al quitar usuario '{usuario}' del grupo de administradores: {e}\n"
-                    try:
-                        result = subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True, capture_output=True, text=True)
-                        if "no es miembro" in result.stdout:
-                            resultado += f"Usuario '{usuario}' no es miembro del grupo de administrators.\n"
-                        else:
-                            resultado += f"Usuario '{usuario}' quitado del grupo de administrators.\n"
-                    except subprocess.CalledProcessError as e:
-                        if "no es miembro" in e.stdout:
-                            resultado += f"Usuario '{usuario}' no es miembro del grupo de administrators.\n"
-                        else:
-                            resultado += f"Error al quitar usuario '{usuario}' del grupo de administrators: {e}\n"
-    except Exception as e:
-        resultado += f"Error al obtener la lista de usuarios: {e}"
+        result = subprocess.run(['net', 'localgroup', 'Administrators'], capture_output=True, text=True)
+        resultado += result.stdout + "\n"
+    except subprocess.CalledProcessError as e:
+        result = subprocess.run(['net', 'localgroup', 'Administradores'], capture_output=True, text=True)
+        resultado += result.stdout + "\n"
     return resultado
 
 def obtener_info_pc():
