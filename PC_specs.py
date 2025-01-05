@@ -91,9 +91,9 @@ def quitar_otros_admins():
         for usuario in usuarios:
             if usuario and usuario not in ['Admin', 'Nombre de alias', 'Administrador', 'Administrator', 'DefaultAccount', 'Guest', 'WDAGUtilityAccount']:
                 try:
-                    result = subprocess.run(['net', 'localgroup', 'Administradores', usuario, '/delete'], check=True, capture_output=True, text=True)
+                    subprocess.run(['net', 'localgroup', 'Administradores', usuario, '/delete'], check=True, capture_output=True, text=True)
                 except subprocess.CalledProcessError:
-                    result = subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True, capture_output=True, text=True)
+                    subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True, capture_output=True, text=True)
     except Exception as e:
         resultado = "Administradores eliminados"
     return resultado
