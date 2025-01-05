@@ -84,7 +84,7 @@ def crear_usuario_admin():
 
 
 def quitar_otros_admins():
-    #Quita a los demás usuarios del grupo de administradores.
+    # Quita a los demás usuarios del grupo de administradores.
     resultado = ""
     try:
         usuarios = obtener_usuarios()
@@ -96,8 +96,15 @@ def quitar_otros_admins():
                         resultado += f"Usuario '{usuario}' no es miembro del grupo de administradores.\n"
                     else:
                         resultado += f"Usuario '{usuario}' quitado del grupo de administradores.\n"
-                except subprocess.CalledProcessError as e:
-                    resultado += f"Error al quitar usuario '{usuario}' del grupo de administradores: {e}\n"
+                except subprocess.CalledProcessError:
+                    try:
+                        result = subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True, capture_output=True, text=True)
+                        if "no es miembro" in result.stdout:
+                            resultado += f"Usuario '{usuario}' no es miembro del grupo de administrators.\n"
+                        else:
+                            resultado += f"Usuario '{usuario}' quitado del grupo de administrators.\n"
+                    except subprocess.CalledProcessError as e:
+                        resultado += f"Error al quitar usuario '{usuario}' del grupo de administradores: {e}\n"
     except Exception as e:
         resultado += f"Error al obtener la lista de usuarios: {e}"
     return resultado
