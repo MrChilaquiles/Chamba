@@ -146,11 +146,14 @@ def obtener_info_pc():
     usuarios = obtener_usuarios()
 
     # Formatear resultados
-    mensaje = f"Marca: {marca}\nModelo: {modelo}\nNúmero de Serie: {numero_serie}\nLicencia de Windows: {licencia}\nProcesador: {procesador}\nRAM Total (GB): {ram_total}\n Creacion de Admin \n{crear_usuario_admin()}\n\n{quitar_otros_admins()}"
-    mensaje += "Información de Discos:\n"
+    mensaje = f"Marca: {marca}\nModelo: {modelo}\nNúmero de Serie: {numero_serie}\nLicencia de Windows: {licencia}\nProcesador: {procesador}\nRAM Total (GB): {ram_total}\nCreacion de Admin: {crear_usuario_admin()}\n{quitar_otros_admins()}"
+    mensaje += "\nInformación de Discos:\n"
     for disco in discos:
         mensaje += f"- {disco['Disco']}: Total={disco['Total (GB)']} GB, Usado={disco['Usado (GB)']} GB, Libre={disco['Libre (GB)']} GB\n"
-    mensaje += "Usuarios:\n" + "\n".join(usuarios)
+    mensaje += "Usuarios: "
+    for usuario in usuarios:
+        if usuario not in ['Administrador', 'Administrator', 'DefaultAccount', 'Guest', 'WDAGUtilityAccount', 'Invitado']:
+            mensaje += f"{usuario}, "
     return mensaje
 
 # Crear usuario 'Admin' y ajustar permisos
