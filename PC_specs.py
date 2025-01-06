@@ -153,7 +153,7 @@ def obtener_info_pc():
     mensaje += "Usuarios: "
     for usuario in usuarios:
         if usuario not in ['Administrador', 'Administrator', 'DefaultAccount', 'Guest', 'WDAGUtilityAccount', 'Invitado']:
-            mensaje += f"{usuario}, "
+            mensaje += f"\n{usuario}"
     return mensaje
 
 # Crear usuario 'Admin' y ajustar permisos
